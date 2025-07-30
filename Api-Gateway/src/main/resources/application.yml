@@ -1,0 +1,35 @@
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: portfolio-service
+          uri: lb://portfolio-service
+          predicates:
+            - Path=/api/portfolio/**
+
+        - id: wealth-service
+          uri: lb://wealth-service
+          predicates:
+            - Path=/app/wealthcalulater/**
+            
+        
+            
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+      
+  instance:
+    prefer-ip-address: true
+
