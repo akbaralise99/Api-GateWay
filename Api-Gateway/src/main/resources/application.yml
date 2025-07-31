@@ -1,4 +1,3 @@
-
 server:
   port: 8080
 
@@ -8,28 +7,43 @@ spring:
 
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
-      routes:
-        - id: portfolio-service
-          uri: lb://portfolio-service
-          predicates:
-            - Path=/api/portfolio/**
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+          routes:
+            - id: portfolio-service
+              uri: lb://portfolio-service
+              predicates:
+                - Path=/api/portfolio/**
 
-        - id: wealth-service
-          uri: lb://wealth-service
-          predicates:
-            - Path=/app/wealthcalulater/**
-            
+            - id: wealth-service
+              uri: lb://wealth-service
+              predicates:
+                - Path=/app/wealthcalulater/**
+        default-filters:
+        - PreserveHostHeader
+        - AddRequestHeader=Cookie, ${originalRequest.cookies}
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedHeaders: "*"
+            allowedMethods: "*"
+            allowCredentials: true    
+
         
-            
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
-      
+      instance-id: ${spring.application.name}:${server.port}
+
   instance:
     prefer-ip-address: true
-
+    
+    
+    
